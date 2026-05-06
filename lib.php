@@ -1147,3 +1147,23 @@ function lamslesson_view(stdClass $lamslesson, stdClass $course, stdClass $cm, s
   $event->add_record_snapshot('lamslesson', $lamslesson);
   $event->trigger();
 }
+
+/**
+ * Get URL to join a LAMS lesson as a learner or staff.
+ * URL redirects LAMS to learner or monitor interface depending on method.
+ *
+ * @param string $username The username
+ * @param string $firstname User's first name
+ * @param string $lastname User's last name
+ * @param string $email User's email
+ * @param string $lang Language code
+ * @param string $country Country code
+ * @param int $lessonid The lesson ID
+ * @param int $courseid The course ID
+ * @param string $coursename The course name
+ * @param int $coursecreatedate Course creation date
+ * @param string $method The method (learner, monitor, etc.)
+ * @param string $extraparam Extra parameters
+ * @param string $customcsv Custom CSV data
+ * @return string The URL to access the lesson
+ */
