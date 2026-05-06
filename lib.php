@@ -37,7 +37,7 @@ require_once($CFG->libdir.'/datalib.php');
 require_once($CFG->libdir.'/moodlelib.php');
 require_once($CFG->libdir.'/xmlize.php');
 require_once($CFG->libdir.'/filelib.php');
-include 'classes/event/course_module_viewed.php';
+include_once 'classes/event/course_module_viewed.php';
 /// CONSTANTS ///////////////////////////////////////////////////////////
 
 define('LAMSLESSON_LOGIN_REQUEST', '/LoginRequest');
@@ -553,7 +553,7 @@ function lamslesson_get_members($form) {
  * @param string $lang The Language's ISO code
  * @return int lesson id
  */
-function lamslesson_get_lesson($username,$ldid,$courseid,$title,$desc,$allowlearnerrestart,$method,$country,$lang,$customcsv='',$displaydesign) {
+function lamslesson_get_lesson($username,$ldid,$courseid,$title,$desc,$allowlearnerrestart,$method,$country,$lang,$customcsv='',$displaydesign=0) {
 
   global $CFG, $USER;
   if (!isset($CFG->lamslesson_serverid, $CFG->lamslesson_serverkey) || $CFG->lamslesson_serverid == "") {
