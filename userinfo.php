@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This page return user info in CSV format to LAMS server.

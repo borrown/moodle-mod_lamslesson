@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -115,7 +116,7 @@ echo '<br>';
 if ($lamslesson->displaydesign) {
    // Get design image
    // For now we always will get this as PNG rather than SVG
-   $design_image = lamslesson_get_design_image($USER->username,$course->id,$course->shortname,$COURSE->timecreated,"au","en",$lamslesson->sequence_id,"2");
+   $design_image = lamslesson_get_design_image($USER->username,$course->id,$course->shortname,$course->timecreated,"au","en",$lamslesson->sequence_id,"2");
    echo '<div><img class="centerimage" src="' . $design_image . '"></div>';
 }
 

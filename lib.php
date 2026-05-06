@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -37,7 +38,6 @@ require_once($CFG->libdir.'/datalib.php');
 require_once($CFG->libdir.'/moodlelib.php');
 require_once($CFG->libdir.'/xmlize.php');
 require_once($CFG->libdir.'/filelib.php');
-include_once 'classes/event/course_module_viewed.php';
 /// CONSTANTS ///////////////////////////////////////////////////////////
 
 define('LAMSLESSON_LOGIN_REQUEST', '/LoginRequest');
@@ -330,17 +330,18 @@ function lamslesson_uninstall() {
 function lamslesson_get_design_image($username,$courseid,$coursename,$coursecreatedate,$country,$lang,$ldid,$format) {
     global $CFG,$USER;
     // append month/year to course name
-    $coursename = $coursename.' '.date('n/Y', $coursecreatedate);
+    $coursename = $coursename.' '.date('n/Y', (int)$coursecreatedate);
 
     // generate hash
     $datetime = lamslesson_get_datetime();
-    $datetime_encoded = urlencode($datetime);
-    $rawstring = trim($datetime).trim($username).trim($CFG->lamslesson_serverid).trim($CFG->lamslesson_serverkey);
+    $datetime_str = (string)$datetime;
+    $datetime_encoded = urlencode($datetime_str);
+    $rawstring = trim($datetime_str).trim($username).trim($CFG->lamslesson_serverid).trim($CFG->lamslesson_serverkey);
     $hashvalue = sha1(strtolower($rawstring));
 
 
     // Put together REST URL
-    $request = "$CFG->lamslesson_serverurl".LAMSLESSON_LD_SERVICE_SVG."?serverId=" . $CFG->lamslesson_serverid . "&datetime=" . $datetime_encoded . "&hashValue=" . $hashvalue . "&username=" . $username  . "&courseId=" . $courseid . "&courseName=" . urlencode($coursename) . "&mode=2&country=" . $country . "&lang=" . $lang . "&ldId=" . $ldid . "&svgFormat=" . $format;
+    $request = "$CFG->lamslesson_serverurl".LAMSLESSON_LD_SERVICE_SVG."?serverId=" . $CFG->lamslesson_serverid . "&datetime=" . $datetime_encoded . "&hashValue=" . $hashvalue . "&username=" . $username  . "&courseId=" . $courseid . "&courseName=" . urlencode((string)$coursename) . "&mode=2&country=" . $country . "&lang=" . $lang . "&ldId=" . $ldid . "&svgFormat=" . $format;
 
     return $request;
 }
@@ -360,13 +361,14 @@ function lamslesson_get_sequences_rest($username,$firstname,$lastname,$email,$co
     }
 
     // append month/year to course name
-    $coursename = $coursename.' '.date('n/Y', $coursecreatedate);
+    $coursename = $coursename.' '.date('n/Y', (int)$coursecreatedate);
 
     // generate hash
     //$datetime = date('F d,Y g:i a');
-    $datetime = lamslesson_get_datetime();
-    $rawstring = trim($datetime).trim($username).trim($CFG->lamslesson_serverid).trim($CFG->lamslesson_serverkey);
-    $hashvalue = sha1(strtolower($rawstring));
+$datetime = lamslesson_get_datetime();
+   $datetime_str = (string)$datetime;
+   $rawstring = trim($datetime_str).trim($username).trim($CFG->lamslesson_serverid).trim($CFG->lamslesson_serverkey);
+   $hashvalue = sha1(strtolower($rawstring));
 
 
     // Put together REST URL
@@ -418,7 +420,7 @@ function lamslesson_process_array($array) {
 
     if (!empty($array['#']['LearningDesign'])) {
       $lds = $array['#']['LearningDesign'];
-      for($i=0; $i<sizeof($lds); $i++) {
+      for($i=0; $i<count($lds); $i++) {
 	$output .= "," . lamslesson_process_sequence($lds[$i]) ;
       }
     }
@@ -427,7 +429,7 @@ function lamslesson_process_array($array) {
 
       $folders = $array['#']['Folder'];
 
-      for($i=0; $i<sizeof($folders); $i++) {
+      for($i=0; $i<count($folders); $i++) {
 	$output .= "," . lamslesson_process_array($folders[$i]);
 	if ($i < sizeof($folders)-1) {
 	  if (!empty($array['#']['Folder']['#'])) {
@@ -645,8 +647,9 @@ function lamslesson_fill_lesson($username,$lsid,$courseid,$country,$lang,$member
 function lamslesson_get_lams_outputs($username,$lamslesson,$foruser) {
   global $CFG, $DB;
 
-  $datetime = lamslesson_get_datetime();
-  $plaintext = trim($datetime)
+$datetime = lamslesson_get_datetime();
+   $datetime_str = (string)$datetime;
+   $plaintext = trim($datetime_str)
     .trim($username)
     .trim($CFG->lamslesson_serverid)
     .trim($CFG->lamslesson_serverkey);
@@ -696,50 +699,50 @@ function lamslesson_get_url($username, $firstname, $lastname, $email, $lang, $co
     global $CFG;
 
     // append month/year to course name
-    $coursename = $coursename.' '.date('n/Y', $coursecreatedate);
-    
+    $coursename = $coursename.' '.date('n/Y', (int)$coursecreatedate);
+
     // change datetime to enforce time to live for login request
-    // See LDEV-3382
     $datetime = lamslesson_get_datetime();
+    $datetime_str = (string)$datetime;
 
     // check if we are to use lessonstrictauth
     if ($method == LAMSLESSON_PARAM_LEARNER_STRICT_METHOD) {
-	$plaintext = trim($datetime)
+	$plaintext = trim($datetime_str)
             .trim($username)
             .trim($method)
 	    .trim($lessonid)
             .trim($CFG->lamslesson_serverid)
             .trim($CFG->lamslesson_serverkey);
 
-    } else {
-   	 $plaintext = trim($datetime)
-            .trim($username)
-            .trim($method)
-            .trim($CFG->lamslesson_serverid)
-            .trim($CFG->lamslesson_serverkey);
-    }
-    $hash = sha1(strtolower($plaintext));
-    $url = $CFG->lamslesson_serverurl. LAMSLESSON_LOGIN_REQUEST .
+} else {
+    	 $plaintext = trim($datetime_str)
+             .trim($username)
+             .trim($method)
+             .trim($CFG->lamslesson_serverid)
+             .trim($CFG->lamslesson_serverkey);
+     }
+     $hash = sha1(strtolower($plaintext));
+     $url = $CFG->lamslesson_serverurl. LAMSLESSON_LOGIN_REQUEST .
         '?'.LAMSLESSON_PARAM_UID.'='.$username.
-	'&'.LAMSLESSON_PARAM_FIRSTNAME.'='.urlencode($firstname).
-	'&'.LAMSLESSON_PARAM_LASTNAME.'='.urlencode($lastname).
-	'&'.LAMSLESSON_PARAM_EMAIL.'='.urlencode($email).
+	'&'.LAMSLESSON_PARAM_FIRSTNAME.'='.urlencode((string)$firstname).
+	'&'.LAMSLESSON_PARAM_LASTNAME.'='.urlencode((string)$lastname).
+	'&'.LAMSLESSON_PARAM_EMAIL.'='.urlencode((string)$email).
         '&'.LAMSLESSON_PARAM_METHOD.'='.$method.
-        '&'.LAMSLESSON_PARAM_TIMESTAMP.'='.urlencode($datetime).
+        '&'.LAMSLESSON_PARAM_TIMESTAMP.'='.urlencode($datetime_str).
         '&'.LAMSLESSON_PARAM_SERVERID.'='.$CFG->lamslesson_serverid.
         '&'.LAMSLESSON_PARAM_HASH.'='.$hash.
         ($method==LAMSLESSON_PARAM_AUTHOR_METHOD ? '' : '&'. LAMSLESSON_PARAM_LSID .'='.$lessonid).
         '&'. LAMSLESSON_PARAM_COURSEID .'='.$courseid.
-        '&'. LAMSLESSON_PARAM_COURSENAME .'='.urlencode($coursename).
-		'&'. LAMSLESSON_PARAM_COUNTRY .'='.trim($country).
-		'&'. LAMSLESSON_PARAM_LANG .'='.substr(trim($lang),0,2);
+        '&'. LAMSLESSON_PARAM_COURSENAME .'='.urlencode((string)$coursename).
+		'&'. LAMSLESSON_PARAM_COUNTRY .'='.urlencode((string)$country).
+		'&'. LAMSLESSON_PARAM_LANG .'='.urlencode(substr(trim((string)$lang),0,2));
 
     if ($extraparam != '') {
       $url .= '&'.$extraparam;
     }
-    if ($customcsv != '') {
-      $url .= '&'. LAMSLESSON_PARAM_CUSTOM_CSV .'='.urlencode($customcsv);
-    }
+if ($customcsv != '') {
+       $url .= '&'. LAMSLESSON_PARAM_CUSTOM_CSV .'='.urlencode((string)$customcsv);
+     }
     return $url;
 }
 
@@ -1051,7 +1054,7 @@ function lamslesson_get_lamsserver_time() {
 
 	$offset = $result - $localtime;
 	
-    return "LAMS time: " . date('m-d-Y H:i:s.u', $result/1000) . " \rMoodle time:" . date('m-d-Y H:i:s.u', $localtime/1000) . " \rOffset: " . $offset/1000/60 . " minutes";
+    return "LAMS time: " . date('m-d-Y H:i:s.u', (int)($result/1000)) . " \rMoodle time:" . date('m-d-Y H:i:s.u', (int)($localtime/1000)) . " \rOffset: " . $offset/1000/60 . " minutes";
 }
 
 /**

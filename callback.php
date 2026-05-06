@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This page is called from LAMS so it can trigger a call back
