@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -53,30 +54,16 @@ $capabilities = array(
     'mod/lamslesson:addinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
     ),
 
     'mod/lamslesson:participate' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'student' => CAP_ALLOW
-        )
     ),
 
     'mod/lamslesson:manage' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-
-        )
     ),
 
 );

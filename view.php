@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -115,7 +116,7 @@ echo '<br>';
 if ($lamslesson->displaydesign) {
    // Get design image
    // For now we always will get this as PNG rather than SVG
-   $design_image = lamslesson_get_design_image($USER->username,$course->id,$course->shortname,$COURSE->timecreated,"au","en",$lamslesson->sequence_id,"2");
+   $design_image = lamslesson_get_design_image($USER->username, (int)$course->id, $course->shortname, (int)$course->timecreated, "au", "en", (int)$lamslesson->sequence_id, "2");
    echo '<div><img class="centerimage" src="' . $design_image . '"></div>';
 }
 
@@ -124,7 +125,7 @@ echo $OUTPUT->box_end();
 
 echo $OUTPUT->box_start('generalbox', 'intro');
 if ($canparticipate || $canmanage) {
-  $learnerurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, $lamslesson->lesson_id, $course->id, $course->fullname, $course->timecreated, LAMSLESSON_PARAM_LEARNER_STRICT_METHOD);
+  $learnerurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, (int)$lamslesson->lesson_id, (int)$course->id, $course->fullname, (int)$course->timecreated, LAMSLESSON_PARAM_LEARNER_STRICT_METHOD);
   $popupaction = new popup_action('click', $learnerurl, 'openlesson', array('height' => 720, 'width' => 1280));
 
   echo '<div class="centerlink">';
@@ -134,7 +135,7 @@ if ($canparticipate || $canmanage) {
 
 }
 if ($canmanage) {
-    $monitorurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, $lamslesson->lesson_id, $course->id, $course->fullname, $course->timecreated, LAMSLESSON_PARAM_MONITOR_METHOD);
+    $monitorurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, (int)$lamslesson->lesson_id, (int)$course->id, $course->fullname, (int)$course->timecreated, LAMSLESSON_PARAM_MONITOR_METHOD);
     $popupmonitoraction = new popup_action('click', $monitorurl, 'monitorlesson', array('height' => 720, 'width' => 1280));
 
   echo '<div class="centerlink">';
@@ -146,7 +147,7 @@ echo $OUTPUT->box_end();
 
 // Once we have progress info ready
 
-$progress = lamslesson_get_student_progress($USER->username,$lamslesson->lesson_id, $course->id,$USER->firstname,$USER->lastname,$USER->email,$USER->country,$USER->lang);
+$progress = lamslesson_get_student_progress($USER->username, (int)$lamslesson->lesson_id, (int)$course->id, $USER->firstname, $USER->lastname, $USER->email, $USER->country, $USER->lang);
 
 // Progress details
 

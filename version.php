@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -29,8 +30,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2021040810;    // If version == 0 then module will not be installed
-$plugin->requires = 2018083010;  // Requires this Moodle version
+$plugin->version  = 2026050600;    // If version == 0 then module will not be installed
+$plugin->requires = 2023042400;  // Requires Moodle 4.2 or later
 $plugin->component = 'mod_lamslesson';      // Full name of the plugin (used for diagnostics)
 $plugin->cron     = 0;           // Period for cron to check this module (secs)
+$plugin->release  = '2.0.0';
+$plugin->maturity = MATURITY_STABLE;
 

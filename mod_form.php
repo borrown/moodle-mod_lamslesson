@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -57,7 +58,7 @@ class mod_lamslesson_mod_form extends moodleform_mod {
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
-            $mform->setType('name', PARAM_CLEAN);
+            $mform->setType('name', PARAM_TEXT);
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -83,7 +84,7 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 	if ($canmanage) {
 
 	  $customcsv = "$USER->username,$COURSE->id,$CFG->lamslesson_serverid";
-	  $authorurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, 0, $COURSE->id, $COURSE->fullname, $COURSE->timecreated, LAMSLESSON_PARAM_AUTHOR_METHOD, $customcsv);
+	  $authorurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, 0, (int)$COURSE->id, $COURSE->fullname, (int)$COURSE->timecreated, LAMSLESSON_PARAM_AUTHOR_METHOD, $customcsv);
 
 	  $previewurl = $CFG->wwwroot.'/mod/lamslesson/preview.php?';
 	  $popupoptions = LAMSLESSON_POPUP_OPTIONS;
@@ -92,7 +93,7 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 	  $refreshlabel = get_string('refresh', 'lamslesson');
 
     	  // display user's lams workspace
-    	  $lds = lamslesson_get_sequences_rest($USER->username, $USER->firstname, $USER->lastname, $USER->email, $COURSE->id, $COURSE->fullname, $COURSE->timecreated, $USER->country, $USER->lang) ;
+    	  $lds = lamslesson_get_sequences_rest($USER->username, $USER->firstname, $USER->lastname, $USER->email, (int)$COURSE->id, $COURSE->fullname, (int)$COURSE->timecreated, $USER->country, $USER->lang) ;
 
 	  // html "chunk" for open Author button 
 
