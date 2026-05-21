@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+//declare(strict_types=1);
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -925,7 +925,7 @@ function lamslesson_set_completion_state(stdClass $cm, stdClass $completion, int
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, null if doesn't know
  */
-function lamslesson_supports(string $feature): ?bool {
+function lamslesson_supports(string $feature): bool|string|null {
     switch($feature) {
         case FEATURE_GROUPS:                  return true;
         case FEATURE_GROUPINGS:               return true;
@@ -937,9 +937,36 @@ function lamslesson_supports(string $feature): ?bool {
         case FEATURE_GRADE_OUTCOMES:          return true;
         case FEATURE_RATE:                    return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_MOD_PURPOSE:             return 'interaction';
+        case FEATURE_SHOW_DESCRIPTION:        return true;
 
         default: return null;
     }
+}
+
+
+/**
+ * Return info for course module listing.
+ *
+ * @param stdClass $cm The course module object.
+ * @return cached_cm_info|false
+ */
+function lamslesson_get_coursemodule_info($cm) {
+    global $DB;
+
+    $lamslesson = $DB->get_record('lamslesson', ['id' => $cm->instance], 'id, name, intro, introformat');
+    if (!$lamslesson) {
+        return false;
+    }
+
+    $info = new cached_cm_info();
+    $info->name = $lamslesson->name;
+
+    if ($cm->showdescription && !empty($lamslesson->intro)) {
+        $info->content = format_module_intro('lamslesson', $lamslesson, $cm->id);
+    }
+
+    return $info;
 }
 
 
