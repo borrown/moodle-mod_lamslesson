@@ -1,0 +1,14 @@
+{{!
+    LAMS Lesson overview template.
+}}
+<div class="lamslesson overview">
+    <h4 class="activity-name">
+        <a href="{{url}}" title="{{name}}">{{name}}</a>
+    </h4>
+    {{#extraitems}}
+        <div class="overview-item">
+            <span class="item-name">{{name}}: </span>
+            <span class="item-value">{{{content}}}</span>
+        </div>
+    {{/extraitems}}
+</div>

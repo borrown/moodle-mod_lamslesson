@@ -30,10 +30,10 @@ declare(strict_types=1);
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2026050600;    // If version == 0 then module will not be installed
+$plugin->version  = 2026111200;    // If version == 0 then module will not be installed
 $plugin->requires = 2023042400;  // Requires Moodle 4.2 or later
 $plugin->component = 'mod_lamslesson';      // Full name of the plugin (used for diagnostics)
 $plugin->cron     = 0;           // Period for cron to check this module (secs)
-$plugin->release  = '2.0.0';
+$plugin->release  = '2.1.0';
 $plugin->maturity = MATURITY_STABLE;
 

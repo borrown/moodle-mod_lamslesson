@@ -51,12 +51,13 @@ if ($ADMIN->fulltree) {
     // Sync LAMS server time
     $html =  html_writer::tag('p', get_string('offsetinfo', 'lamslesson'));
     $html .=  html_writer::start_tag('div', array('style' => 'text-align:center;padding-top: 15px; padding-bottom:5px;'));
-    $html .=  html_writer::start_tag('span', array('id' => 'offsetbutton', 'class' => 'yui3-button yui3-link-button'));
+    $html .=  html_writer::start_tag('span', array('id' => 'offsetbutton'));
 
     $html .= html_writer::tag('a', get_string('offsetbutton', 'lamslesson'),
                 array('id' => 'offsetbtn',
                         'name' => 'offsetbtn',
-                        'href' => 'javascript:calculateOffset();'));
+                        'class' => 'btn btn-secondary',
+                        'href' => '#'));
     $html .= html_writer::end_tag('span');
     $html .= html_writer::end_tag('div');
 
@@ -67,14 +68,14 @@ if ($ADMIN->fulltree) {
 
     // Validation button
 
-    $html = html_writer::script('', $CFG->wwwroot.'/mod/lamslesson/validate.js');
-    $html .=  html_writer::tag('p', get_string('validationinfo', 'lamslesson')); 
+    $html = html_writer::tag('p', get_string('validationinfo', 'lamslesson'));
     $html .=  html_writer::start_tag('div', array('style' => 'text-align:center;padding-top: 15px; padding-bottom:5px;'));
-    $html .=  html_writer::start_tag('span', array('id' => 'validatebutton', 'class' => 'yui3-button yui3-link-button'));
+    $html .=  html_writer::start_tag('span', array('id' => 'validatebutton'));
     $html .=  html_writer::tag('a', get_string('validationbutton', 'lamslesson'), 
 		array('id' => 'validatebtn', 
 			'name' => 'validatebtn', 
-			'href' => 'javascript:validate();'));
+			'class' => 'btn btn-secondary',
+			'href' => '#'));
     $html .= html_writer::end_tag('span');
     $html .= html_writer::end_tag('div');
 
@@ -89,8 +90,6 @@ if ($ADMIN->fulltree) {
                        $html));
     $html .= html_writer::end_tag('div');
 
-
-
-
+    $PAGE->requires->js_call_amd('mod_lamslesson/validate', 'init');
 }
 
