@@ -348,8 +348,7 @@ function lamslesson_get_design_image(string $username, int $courseid, string $co
  * Get sequences(learning designs) for the user in lamslesson using the REST interface
  *
  * @param string $username The username of the user. Set this to "" if you would just like to get sequences for the currently logged in user.
- * @return string to define the tree structure
- * 
+ * @return string JSON encoded tree structure
  */
 function lamslesson_get_sequences_rest(string $username, string $firstname, string $lastname, string $email, int $courseid, string $coursename, $coursecreatedate, string $country, string $lang): string {
     global $CFG,$USER;
@@ -393,63 +392,72 @@ $datetime = lamslesson_get_datetime();
 
    $xml_array = xmlize($xml);
 
-   // Process the Folder element and return as JavaScript object string
-   // The result will be wrapped in [] by the JavaScript in mod_form.php
+   // Process the Folder element and return it as JSON for the JavaScript module.
    $result = lamslesson_process_array($xml_array['Folder'] ?? []);
-   return (string)$result;
+   $json = json_encode([$result], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+
+   return $json === false ? '[]' : $json;
 }
 
 
-/*
- * Convert workspace contents from an xmlize array into a string that YUI Tree
- * can use.
+/**
+ * Convert a workspace folder from an xmlize array into a tree node structure.
+ *
+ * @param array $array The folder node from the xmlize array.
+ * @return array The folder represented as a tree node.
  */
-function lamslesson_process_array(array $array): string {
-  $output = '';
-  if (empty($array['@']['resourceId'])) {
-    // it's a folder
-    $folder_name = preg_replace("/'/", "\\1'", $array['@']['name'] ?? '');
-    $output .= "{type:'Text', label:'" . $folder_name . "',id:0";
+function lamslesson_process_array(array $array): array {
+    $node = [
+        'type' => 'Text',
+        'label' => (string)($array['@']['name'] ?? ''),
+        'id' => 0,
+        'expanded' => true,
+        'children' => [],
+    ];
 
-    $hasLearningDesign = !empty($array['#']['LearningDesign']);
-    $hasFolder = !empty($array['#']['Folder']);
-
-    if (!$hasLearningDesign && !$hasFolder) {
-      $output .= ",expanded:0,children:[{type:'HTML',html:'<i>-" . get_string('empty', 'lamslesson') . "-</i>', id:0}]}";
-      return $output;
-    } else {
-      $output .= ",children:[";
+    if (!empty($array['@']['resourceId'])) {
+        return $node;
     }
 
-    if ($hasLearningDesign) {
-      $lds = $array['#']['LearningDesign'];
-      for($i=0; $i<count($lds); $i++) {
-	$output .= "," . lamslesson_process_sequence($lds[$i]) ;
-      }
+    $haslearningdesign = !empty($array['#']['LearningDesign']);
+    $hasfolder = !empty($array['#']['Folder']);
+
+    if (!$haslearningdesign && !$hasfolder) {
+        $node['children'][] = [
+            'type' => 'HTML',
+            'label' => get_string('empty', 'lamslesson'),
+            'id' => 0,
+        ];
+        return $node;
     }
 
-    if ($hasFolder) {
-      $folders = $array['#']['Folder'];
-
-      for($i=0; $i<count($folders); $i++) {
-	$output .= "," . lamslesson_process_array($folders[$i]);
-	if ($i < count($folders)-1) {
-	  if (!empty($array['#']['Folder']['#'])) {
-	    $output .= ']},';
-	  }
-	}
-      }
+    if ($haslearningdesign) {
+        foreach ($array['#']['LearningDesign'] as $learningdesign) {
+            $node['children'][] = lamslesson_process_sequence($learningdesign);
+        }
     }
-    $output .= "]}";
-  }
-  return $output;
+
+    if ($hasfolder) {
+        foreach ($array['#']['Folder'] as $folder) {
+            $node['children'][] = lamslesson_process_array($folder);
+        }
+    }
+
+    return $node;
 }
 
-function lamslesson_process_sequence(array $xml_node): string {
-  $output = '';
-  $ld_name = preg_replace("/'/", "\\1'", $xml_node['@']['name'] ?? '');
-  $output .= "{type:'Text',label:'" . $ld_name . "',id:'" . ($xml_node['@']['resourceId'] ?? '') . "'}";
-  return $output;
+/**
+ * Convert a learning design from an xmlize array into a tree node structure.
+ *
+ * @param array $xml_node The learning design node from the xmlize array.
+ * @return array The learning design represented as a tree node.
+ */
+function lamslesson_process_sequence(array $xml_node): array {
+    return [
+        'type' => 'Text',
+        'label' => (string)($xml_node['@']['name'] ?? ''),
+        'id' => (string)($xml_node['@']['resourceId'] ?? ''),
+    ];
 }
 
 

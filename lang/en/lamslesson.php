@@ -63,6 +63,7 @@ $string["servertimeoffset"] = "Offset time difference (minutes)";
 $string["servertimeoffsetinfo"] = "This is the time difference (or time offset) between the LAMS and Moodle server.";
 $string["offsetheader"] = "Time offset";
 $string["lamsmoodlehelp"] = "LAMS-Moodle integration tutorial";
+$string["invalidserverurl"] = "The server URL must start with http:// or https://";
 $string["validationsuccessful"] = "Validation successful! You can now save your settings and start using LAMS within Moodle.";
 $string["validationfailed"] = "Validation failed: please check that the settings you have entered match with the settings in LAMS";
 $string["restcallfail"] = "Call to LAMS failed: received no response or connection was refused. Please check that you have the correct LAMS server URL and that it is online.";

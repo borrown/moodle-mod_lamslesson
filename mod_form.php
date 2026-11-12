@@ -35,7 +35,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 class mod_lamslesson_mod_form extends moodleform_mod {
 
     function definition() {
-      global $COURSE, $USER, $CFG;
+      global $COURSE, $USER, $CFG, $PAGE;
 
         $mform =& $this->_form;
 
@@ -80,14 +80,16 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 
     //-- Open Author & Preview URL buttons
 
+        $authorpreviewbutton = '';
+        $customcsv = '';
+        $lds = '[]';
+
 	// Check whether this person has the right permissions to see the open button. 
 	if ($canmanage) {
 
 	  $customcsv = "$USER->username,$COURSE->id,$CFG->lamslesson_serverid";
 	  $authorurl = lamslesson_get_url($USER->username, $USER->firstname, $USER->lastname, $USER->email, $USER->lang, $USER->country, 0, (int)$COURSE->id, $COURSE->fullname, (int)$COURSE->timecreated, LAMSLESSON_PARAM_AUTHOR_METHOD, $customcsv);
 
-	  $previewurl = $CFG->wwwroot.'/mod/lamslesson/preview.php?';
-	  $popupoptions = LAMSLESSON_POPUP_OPTIONS;
 	  $openauthorlabel = get_string('openauthor', 'lamslesson');
 	  $openpreviewlabel = get_string('previewthislesson', 'lamslesson');
 	  $refreshlabel = get_string('refresh', 'lamslesson');
@@ -97,37 +99,35 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 
 	  // html "chunk" for open Author button 
 
-        $authorpreviewbutton = html_writer::script(js_writer::set_variable('authorWin', 'null') . 
-                                js_writer::set_variable('previewWin', 'null') .
-                                js_writer::set_variable('options', $popupoptions) .
-                                js_writer::set_variable('course', $COURSE->id) .
-				js_writer::set_variable('sequence_id', $sequence_id) .
-				js_writer::set_variable('updatewarning', $updatewarning) .
-				js_writer::set_variable('currentsequence', $currentsequence));
-
-        $authorpreviewbutton .= html_writer::script('', $CFG->wwwroot.'/mod/lamslesson/preview.js');
     	$authorpreviewbutton .= html_writer::start_tag('div', array('id' => 'buttons', 'style' => 'float:right'));
         
         // Preview button
-        $authorpreviewbutton .= html_writer::link('#nogo', $openpreviewlabel, array('onclick' => js_writer::function_call('openPreview', array('1' => $previewurl, '2' => 'preview', '3' => 1280, '4' => 720)), 'id' => 'previewbutton', 'style' => 'visibility:hidden;margin: 1em;', 'class' => 'btn btn-primary'));
+        $authorpreviewbutton .= html_writer::link('#', $openpreviewlabel, array('id' => 'previewbutton', 'style' => 'visibility:hidden;margin: 1em;', 'class' => 'btn btn-primary', 'data-action' => 'preview'));
 
         //Authoring button
-        $authorpreviewbutton .= html_writer::link('#nogo', $openauthorlabel, array('onclick' => js_writer::function_call('PopupCenter', array('1' => $authorurl, '2' => 'author', '3' => 1280, '4' => 720)), 'class' => 'btn btn-primary', 'style' => 'margin: 1em;','id' => 'authorbutton'));
+        $authorpreviewbutton .= html_writer::link('#', $openauthorlabel, array('class' => 'btn btn-primary', 'style' => 'margin: 1em;', 'id' => 'authorbutton', 'data-action' => 'author', 'data-url' => $authorurl));
 
         //Refresh button
-	$authorpreviewbutton .= html_writer::link('#nogo', $refreshlabel, array('onclick' => js_writer::function_call('location.reload'), 'class' => 'btn btn-primary', 'style' => 'margin: 1em;','id' => 'authorbutton'));
+	$authorpreviewbutton .= html_writer::link('#', $refreshlabel, array('class' => 'btn btn-primary', 'style' => 'margin: 1em;', 'id' => 'refreshbutton', 'data-action' => 'refresh'));
 
         $authorpreviewbutton .= html_writer::end_tag('div');
 	}
 
-    	// html "chuck" for YUI tree
-    	$treecomponent = html_writer::tag('div', '' , array('id' => 'treeDiv'));
-    	$treecomponent .= html_writer::tag('div', '' , array('id' => 'updatesequence'));
+        // html "chunk" for the sequences tree. The data is read by the AMD module.
+        $treecomponent = html_writer::tag('div', '', array(
+            'id' => 'treeDiv',
+            'data-region' => 'lamslesson-tree',
+            'data-sequences' => $lds,
+            'data-course' => (string)$COURSE->id,
+            'data-preview-url' => $CFG->wwwroot.'/mod/lamslesson/preview.php?',
+            'data-sequence-id' => (string)$sequence_id,
+            'data-update-warning' => $updatewarning,
+            'data-current-sequence' => $currentsequence,
+        ));
+        $treecomponent .= html_writer::tag('div', '', array('id' => 'updatesequence'));
 
-    	$treecomponent .= html_writer::tag('script', 'YUI().use("yui2-treeview","yui2-dom-event", function(Y) {var YAHOO = Y.YUI2; var tree = new YAHOO.widget.TreeView("treeDiv",['. $lds .']);tree.getNodeByIndex(1).expand(true);tree.getNodeByIndex(2).expand(true);tree.render();tree.subscribe("clickEvent",function(oArgs) {selectSequence(oArgs.node.data.id, oArgs.node.label);})});', array('type' => 'text/javascript'));
-	
-    	// Now we put the two html chunks together
-    	$html = $authorpreviewbutton . $treecomponent;
+        // Now we put the two html chunks together
+        $html = $authorpreviewbutton . $treecomponent;
 
         $mform->addElement('hidden', 'sequence_id');
         $mform->setType('sequence_id', PARAM_INT);
@@ -156,6 +156,8 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 		//-------------------------------------------------------------------------------
         // add standard buttons, common to all modules
         $this->add_action_buttons();
+
+        $PAGE->requires->js_call_amd('mod_lamslesson/preview', 'init');
     }
 	
     function validation($data, $files) {
