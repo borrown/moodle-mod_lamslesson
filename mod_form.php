@@ -99,7 +99,7 @@ class mod_lamslesson_mod_form extends moodleform_mod {
 
 	  // html "chunk" for open Author button 
 
-    	$authorpreviewbutton .= html_writer::start_tag('div', array('id' => 'buttons', 'style' => 'float:right'));
+    	$authorpreviewbutton .= html_writer::start_tag('div', array('id' => 'buttons', 'class' => 'lamslesson-buttons'));
         
         // Preview button
         $authorpreviewbutton .= html_writer::link('#', $openpreviewlabel, array('id' => 'previewbutton', 'style' => 'visibility:hidden;margin: 1em;', 'class' => 'btn btn-primary', 'data-action' => 'preview'));

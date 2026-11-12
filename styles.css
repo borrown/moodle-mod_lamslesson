@@ -10,6 +10,11 @@
 #validatebutton a {text-decoration:none;padding-left: 2.25em;background: url([[pix:i/admin]]) 5% 50% no-repeat;}
 #offsetbutton a {text-decoration:none;padding-left: 2.25em;background: url([[pix:i/log]]) 5% 50% no-repeat;}
 
+/* Sequence tree form: keep the action buttons in their own row so the tree
+   list cannot overlap them and swallow their clicks. */
+.lamslesson-buttons {text-align: right;}
+#treeDiv {clear: both;}
+
 /* Copyright (c) 2006 Yahoo! Inc. All rights reserved.
 This file is from:
 http://developer.yahoo.com/yui/examples/treeview/assets/css/folders/tree.css
