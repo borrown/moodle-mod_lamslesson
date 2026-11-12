@@ -80,7 +80,7 @@ class overview extends \core_courseformat\activityoverviewbase {
             return;
         }
 
-        $xml_array = xmlize($xml);
+        $xml_array = (new \core\xml_parser())->parse($xml);
         if (empty($xml_array['Folder'])) {
             return;
         }
@@ -89,7 +89,7 @@ class overview extends \core_courseformat\activityoverviewbase {
     }
 
     /**
-     * Recursively extract sequence names from an xmlize() node.
+     * Recursively extract sequence names from an xml_parser node.
      *
      * @param array $node
      */

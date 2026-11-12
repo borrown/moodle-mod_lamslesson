@@ -10,7 +10,6 @@ declare(strict_types=1);
  
  /** Include required files */
  require_once($CFG->dirroot . '/mod/lamslesson/lib.php');
- require_once($CFG->libdir.'/xmlize.php');
 
 /**
  * Define all the restore steps that will be used by the restore_lamslesson_activity_task
@@ -106,7 +105,7 @@ class restore_lamslesson_activity_structure_step extends restore_activity_struct
 			print_error('restcallfail', 'lamslesson');
 		}
 	
-	  	$xml_array = xmlize($xml);
+	  	$xml_array = (new \core\xml_parser())->parse($xml);
 	  	$lessonId = $xml_array['Lesson']['@']['lessonId'];
 
 		if (!isset($lessonId) || $lessonId <= 0) {

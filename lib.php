@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 /** Include required files */
 require_once($CFG->libdir.'/datalib.php');
 require_once($CFG->libdir.'/moodlelib.php');
-require_once($CFG->libdir.'/xmlize.php');
+
 require_once($CFG->libdir.'/filelib.php');
 
 /**
@@ -195,7 +195,7 @@ function lamslesson_delete_lesson(string $username, int $lsId): bool {
      return false;
    }
 
-   $xml_array = xmlize($xml);
+   $xml_array = (new \core\xml_parser())->parse($xml);
    $deleted = $xml_array['Lesson']['@']['deleted'] ?? false;
    return (bool)$deleted;
 }
@@ -390,7 +390,7 @@ $datetime = lamslesson_get_datetime();
         print_error('restcallfail', 'lamslesson', $CFG->wwwroot.'/course/view.php?id='.$courseid);
    }
 
-   $xml_array = xmlize($xml);
+   $xml_array = (new \core\xml_parser())->parse($xml);
 
    // Process the Folder element and return it as JSON for the JavaScript module.
    $result = lamslesson_process_array($xml_array['Folder'] ?? []);
@@ -401,9 +401,9 @@ $datetime = lamslesson_get_datetime();
 
 
 /**
- * Convert a workspace folder from an xmlize array into a tree node structure.
+ * Convert a workspace folder from an xml_parser array into a tree node structure.
  *
- * @param array $array The folder node from the xmlize array.
+ * @param array $array The folder node from the xml_parser array.
  * @return array The folder represented as a tree node.
  */
 function lamslesson_process_array(array $array): array {
@@ -447,9 +447,9 @@ function lamslesson_process_array(array $array): array {
 }
 
 /**
- * Convert a learning design from an xmlize array into a tree node structure.
+ * Convert a learning design from an xml_parser array into a tree node structure.
  *
- * @param array $xml_node The learning design node from the xmlize array.
+ * @param array $xml_node The learning design node from the xml_parser array.
  * @return array The learning design represented as a tree node.
  */
 function lamslesson_process_sequence(array $xml_node): array {
@@ -677,7 +677,7 @@ function lamslesson_get_lesson(string $username, int $ldid, int $courseid, strin
      return 0;
    }
 
-   $xml_array = xmlize($xml);
+   $xml_array = (new \core\xml_parser())->parse($xml);
    if (!$xml_array) {
      return 0;
    }
@@ -714,7 +714,7 @@ function lamslesson_get_lams_outputs(string $username, stdClass $lamslesson, str
      return null;
    }
 
-   $results = xmlize($xml);
+   $results = (new \core\xml_parser())->parse($xml);
    if (!$results) {
      return null;
    }
@@ -881,7 +881,7 @@ function lamslesson_get_student_progress(string $username, int $ldid, int $cours
   	    return [];
   	}
   	
-  	$xml_array = xmlize($xml);
+  	$xml_array = (new \core\xml_parser())->parse($xml);
  
   	$response = $xml_array['LessonProgress']['#'] ?? [];
   	if (empty($response)) {
